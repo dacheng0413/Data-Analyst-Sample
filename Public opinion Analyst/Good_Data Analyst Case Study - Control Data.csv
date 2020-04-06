@@ -1,0 +1,247 @@
+Response ID,Status,Age,Gender,Q1,Q2,Q3,Q4,Q5
+1,Disqualified,18-29,Female,,,,,
+2,Complete,30-49,Male,Of little importance,Of average importance,Strongly agree,Very much,Sometimes
+3,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Very much,Sometimes
+4,Complete,18-29,Female,Of little importance,Of average importance,Neither agree nor disagree,Moderately,Not very often
+5,Disqualified,30-49,Male,,,,,
+6,Disqualified,18-29,Male,,,,,
+7,Disqualified,30-49,Male,,,,,
+8,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Very much,Sometimes
+9,Disqualified,30-49,Male,,,,,
+10,Complete,30-49,Male,Very important,Of average importance,Disagree somewhat,Moderately,Sometimes
+11,Complete,18-29,Male,Of little importance,Of average importance,Strongly agree,Extremely,Frequently
+12,Complete,50-64,Male,Of little importance,Of average importance,Strongly agree,Extremely,All the time
+13,Complete,30-49,Male,Of little importance,Of average importance,Strongly agree,Very much,Sometimes
+14,Complete,30-49,Male,Of little importance,Very important,Agree somewhat,A little bit,Sometimes
+15,Complete,18-29,Male,Of little importance,Of average importance,Agree somewhat,Moderately,Sometimes
+16,Complete,30-49,Female,Of little importance,Of average importance,Strongly agree,Extremely,Frequently
+17,Complete,18-29,Male,Of little importance,Of average importance,Strongly agree,Moderately,Frequently
+18,Disqualified,18-29,Female,,,,,
+19,Disqualified,50-64,Male,,,,,
+20,Complete,30-49,Male,Very important,Of average importance,Disagree somewhat,A little bit,Sometimes
+21,Disqualified,18-29,Male,,,,,
+22,Disqualified,30-49,Male,,,,,
+23,Complete,18-29,Female,Very important,Very important,Strongly agree,Extremely,All the time
+24,Complete,30-49,Female,Absolutely essential,Of average importance,Strongly agree,Extremely,All the time
+25,Complete,30-49,Female,Very important,Very important,Agree somewhat,A little bit,Frequently
+26,Complete,18-29,Male,Very important,Very important,Strongly agree,Very much,Frequently
+27,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Extremely,All the time
+28,Complete,30-49,Male,Very important,Very important,Strongly agree,Very much,Frequently
+29,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,Frequently
+30,Complete,18-29,Male,Absolutely essential,Very important,Strongly agree,Extremely,Frequently
+31,Complete,18-29,Female,Absolutely essential,Very important,Strongly agree,Moderately,Sometimes
+32,Complete,18-29,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,All the time
+33,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,Very much,Frequently
+34,Disqualified,30-49,Male,,,,,
+35,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,Frequently
+36,Complete,30-49,Female,Very important,Very important,Strongly agree,Moderately,Sometimes
+37,Complete,18-29,Male,Of little importance,Very important,Strongly agree,Moderately,Sometimes
+38,Complete,30-49,Male,Of little importance,Of average importance,Strongly agree,Very much,Frequently
+39,Complete,50-64,Female,Very important,Of average importance,Disagree somewhat,Moderately,Sometimes
+40,Disqualified,30-49,Male,,,,,
+41,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Extremely,Frequently
+42,Disqualified,18-29,Male,,,,,
+43,Complete,50-64,Male,Absolutely essential,Very important,Strongly agree,Very much,Sometimes
+44,Complete,18-29,Female,Of little importance,Very important,Neither agree nor disagree,Extremely,Sometimes
+45,Complete,18-29,Female,Very important,Very important,Strongly agree,Moderately,Sometimes
+46,Complete,18-29,Male,Absolutely essential,Of average importance,Strongly agree,Very much,All the time
+47,Complete,18-29,Female,Very important,Very important,Strongly agree,A little bit,Not very often
+48,Complete,18-29,Male,Absolutely essential,Absolutely essential,Strongly agree,Very much,Frequently
+49,Complete,30-49,Male,Very important,Very important,Agree somewhat,Very much,Sometimes
+50,Complete,50-64,Male,Absolutely essential,Very important,Strongly agree,Moderately,Sometimes
+51,Disqualified,18-29,Female,,,,,
+52,Disqualified,30-49,Male,,,,,
+53,Complete,18-29,Male,Very important,Of average importance,Agree somewhat,A little bit,Sometimes
+54,Complete,30-49,Female,Absolutely essential,Of average importance,Strongly agree,Moderately,Frequently
+55,Complete,18-29,Male,Very important,Very important,Strongly agree,Moderately,Sometimes
+56,Complete,30-49,Male,Absolutely essential,Absolutely essential,Strongly agree,Very much,Frequently
+57,Disqualified,18-29,Female,,,,,
+58,Complete,30-49,Female,Very important,Of average importance,Strongly agree,Moderately,Sometimes
+59,Complete,30-49,Male,Of little importance,Of average importance,Agree somewhat,Moderately,Sometimes
+60,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Very much,All the time
+61,Complete,30-49,Male,Very important,Of average importance,Agree somewhat,A little bit,Not very often
+62,Complete,18-29,Male,Of little importance,Of average importance,Strongly agree,Not at all,Not very often
+63,Complete,18-29,Male,Of little importance,Of average importance,Strongly agree,Extremely,All the time
+64,Complete,30-49,Male,Very important,Very important,Disagree somewhat,Moderately,Frequently
+65,Disqualified,30-49,Male,,,,,
+66,Complete,30-49,Male,Very important,Very important,Strongly agree,A little bit,Sometimes
+67,Disqualified,30-49,Male,,,,,
+68,Complete,30-49,Female,Of little importance,Of average importance,Strongly agree,Moderately,Sometimes
+69,Complete,18-29,Male,Of little importance,Of average importance,Strongly agree,Extremely,Frequently
+70,Complete,18-29,Female,Of little importance,Very important,Agree somewhat,A little bit,Not very often
+71,Disqualified,18-29,Male,,,,,
+72,Complete,30-49,Male,Absolutely essential,Absolutely essential,Strongly agree,A little bit,Not very often
+73,Complete,18-29,Female,Absolutely essential,Very important,Agree somewhat,Not at all,Sometimes
+74,Complete,30-49,Male,Very important,Very important,Agree somewhat,Very much,Sometimes
+75,Disqualified,18-29,Female,,,,,
+76,Complete,18-29,Male,Absolutely essential,Of average importance,Strongly agree,Very much,Frequently
+77,Complete,18-29,Male,Absolutely essential,Of average importance,Strongly agree,Moderately,Frequently
+78,Complete,18-29,Male,Very important,Of average importance,Agree somewhat,Very much,Frequently
+79,Complete,18-29,Male,Very important,Of little importance,Neither agree nor disagree,Moderately,Frequently
+80,Complete,30-49,Female,Very important,Very important,Agree somewhat,Very much,Frequently
+81,Complete,18-29,Female,Of little importance,Very important,Strongly agree,Moderately,Frequently
+82,Complete,30-49,Male,Of little importance,Of average importance,Strongly agree,Moderately,Frequently
+83,Complete,30-49,Female,Of little importance,Of average importance,Strongly agree,Very much,Frequently
+84,Complete,18-29,Female,Of little importance,Of average importance,Strongly agree,Extremely,All the time
+85,Complete,30-49,Male,Very important,Of average importance,Agree somewhat,Extremely,All the time
+86,Complete,30-49,Male,Very important,Very important,Strongly agree,Moderately,Sometimes
+87,Complete,18-29,Male,Very important,Very important,Agree somewhat,Moderately,Sometimes
+88,Complete,18-29,Male,Absolutely essential,Absolutely essential,Strongly agree,Very much,Frequently
+89,Complete,30-49,Male,Absolutely essential,Very important,Agree somewhat,Extremely,Frequently
+90,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,Frequently
+91,Complete,30-49,Male,Very important,Very important,Strongly agree,Very much,Frequently
+92,Complete,30-49,Female,Absolutely essential,Of average importance,Strongly agree,Extremely,Frequently
+93,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Moderately,Sometimes
+94,Complete,30-49,Male,Very important,Very important,Strongly agree,Moderately,Sometimes
+95,Complete,30-49,Female,Very important,Very important,Strongly agree,Moderately,Sometimes
+96,Complete,18-29,Male,Of average importance,Very important,Strongly agree,Moderately,Frequently
+97,Disqualified,30-49,Male,,,,,
+98,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Moderately,Sometimes
+99,Complete,30-49,Male,Very important,Very important,Strongly agree,Moderately,Sometimes
+100,Complete,18-29,Male,Absolutely essential,Absolutely essential,Strongly agree,Moderately,Frequently
+101,Complete,18-29,Male,Very important,Very important,Neither agree nor disagree,Moderately,Frequently
+102,Complete,30-49,Male,Very important,Very important,Strongly agree,Moderately,Sometimes
+103,Complete,18-29,Female,Very important,Very important,Strongly agree,Moderately,Frequently
+104,Disqualified,50-64,Female,,,,,
+105,Complete,18-29,Male,Very important,Very important,Agree somewhat,Very much,Frequently
+106,Complete,18-29,Male,Absolutely essential,Very important,Agree somewhat,Very much,Frequently
+107,Disqualified,30-49,Male,,,,,
+108,Complete,18-29,Male,Very important,Very important,Agree somewhat,Moderately,Sometimes
+109,Complete,18-29,Female,Of little importance,Of average importance,Strongly agree,Very much,Frequently
+110,Complete,18-29,Male,Of little importance,Very important,Strongly agree,Moderately,Sometimes
+111,Complete,18-29,Male,Of little importance,Of average importance,Strongly agree,A little bit,Sometimes
+112,Complete,30-49,Female,Of little importance,Of average importance,Strongly agree,Very much,All the time
+113,Complete,18-29,Male,Of little importance,Very important,Strongly agree,Moderately,Sometimes
+114,Complete,18-29,Male,Of little importance,Very important,Strongly agree,Moderately,Sometimes
+115,Complete,30-49,Female,Of little importance,Very important,Strongly agree,Very much,Frequently
+116,Complete,30-49,Female,Absolutely essential,Of average importance,Strongly agree,Very much,Frequently
+117,Complete,50-64,Female,Absolutely essential,Of average importance,Strongly agree,Moderately,Sometimes
+118,Disqualified,30-49,Male,,,,,
+119,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,All the time
+120,Complete,18-29,Female,Absolutely essential,Of average importance,Agree somewhat,Extremely,Frequently
+121,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Very much,Frequently
+122,Complete,18-29,Male,Very important,Of average importance,Strongly agree,Very much,Frequently
+123,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Moderately,Sometimes
+124,Complete,18-29,Female,Very important,Very important,Strongly agree,Extremely,All the time
+125,Disqualified,18-29,Female,,,,,
+126,Complete,18-29,Male,Of average importance,Of average importance,Disagree somewhat,Moderately,Sometimes
+127,Complete,30-49,Male,Very important,Very important,Agree somewhat,Very much,Sometimes
+128,Disqualified,30-49,Male,,,,,
+129,Disqualified,30-49,Male,,,,,
+130,Complete,18-29,Male,Absolutely essential,Of average importance,Strongly agree,Very much,Frequently
+131,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,A little bit,Sometimes
+132,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,All the time
+133,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Very much,Frequently
+134,Complete,30-49,Female,Absolutely essential,Of average importance,Strongly agree,Moderately,Not very often
+135,Complete,18-29,Female,Absolutely essential,Of average importance,Strongly agree,Extremely,Frequently
+136,Disqualified,30-49,Female,,,,,
+137,Complete,30-49,Male,Very important,Of average importance,Strongly agree,A little bit,Sometimes
+138,Disqualified,18-29,Male,,,,,
+139,Disqualified,18-29,Female,,,,,
+140,Complete,30-49,Female,Very important,Of average importance,Strongly agree,Very much,All the time
+141,Disqualified,30-49,Male,,,,,
+142,Complete,50-64,Male,Absolutely essential,Very important,Strongly agree,Moderately,Frequently
+143,Complete,30-49,Male,Very important,Very important,Strongly agree,Moderately,Sometimes
+144,Disqualified,65+,Female,,,,,
+145,Complete,30-49,Male,Absolutely essential,Of average importance,Strongly agree,Extremely,All the time
+146,Disqualified,30-49,Male,,,,,
+147,Complete,30-49,Female,Absolutely essential,Of average importance,Strongly agree,Very much,Sometimes
+148,Complete,18-29,Male,Very important,Of average importance,Strongly agree,Moderately,Frequently
+149,Disqualified,30-49,Male,,,,,
+150,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,Moderately,Frequently
+151,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,Extremely,Frequently
+152,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,Moderately,Frequently
+153,Complete,50-64,Female,Absolutely essential,Absolutely essential,Agree somewhat,Moderately,Sometimes
+154,Complete,30-49,Female,Very important,Very important,Agree somewhat,A little bit,Not very often
+155,Disqualified,18-29,Male,,,,,
+156,Complete,30-49,Female,Very important,Of average importance,Strongly agree,Extremely,Frequently
+157,Complete,30-49,Female,Of little importance,Very important,Agree somewhat,Very much,Sometimes
+158,Complete,30-49,Female,Of little importance,Of average importance,Strongly agree,Moderately,Frequently
+159,Complete,18-29,Female,Of little importance,Of average importance,Strongly agree,Moderately,Sometimes
+160,Complete,65+,Male,Of little importance,Very important,Strongly agree,Very much,All the time
+161,Complete,18-29,Male,Very important,Very important,Strongly agree,Very much,Frequently
+162,Complete,30-49,Male,Very important,Very important,Strongly agree,Moderately,Frequently
+163,Complete,30-49,Male,Of average importance,Of average importance,Neither agree nor disagree,A little bit,Not very often
+164,Complete,30-49,Male,Very important,Absolutely essential,Agree somewhat,Very much,All the time
+165,Disqualified,18-29,Female,,,,,
+166,Complete,18-29,Male,Absolutely essential,Absolutely essential,Strongly agree,Very much,Frequently
+167,Complete,18-29,Male,Very important,Very important,Agree somewhat,Moderately,Sometimes
+168,Complete,30-49,Male,Very important,Absolutely essential,Strongly agree,Moderately,Frequently
+169,Complete,18-29,Male,Very important,Of average importance,Neither agree nor disagree,Very much,Sometimes
+170,Disqualified,18-29,Male,,,,,
+171,Disqualified,30-49,Male,,,,,
+172,Disqualified,,,,,,,
+173,Disqualified,18-29,Male,,,,,
+174,Disqualified,18-29,Male,,,,,
+175,Complete,18-29,Male,Of average importance,Of average importance,Neither agree nor disagree,Moderately,Sometimes
+176,Complete,65+,Female,Absolutely essential,Absolutely essential,Agree somewhat,Very much,Sometimes
+177,Complete,18-29,Female,Absolutely essential,Very important,Agree somewhat,Extremely,All the time
+178,Disqualified,30-49,Male,,,,,
+179,Disqualified,30-49,Male,,,,,
+180,Disqualified,18-29,Female,,,,,
+181,Complete,50-64,Female,Absolutely essential,Absolutely essential,Strongly agree,Moderately,Sometimes
+182,Disqualified,18-29,Female,,,,,
+183,Complete,30-49,Male,Very important,Absolutely essential,Strongly agree,Moderately,Sometimes
+184,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,Very much,Frequently
+185,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,Extremely,All the time
+186,Complete,30-49,Male,Very important,Absolutely essential,Agree somewhat,Extremely,Frequently
+187,Complete,18-29,Male,Very important,Very important,Agree somewhat,Very much,Sometimes
+188,Disqualified,18-29,Female,,,,,
+189,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Moderately,Frequently
+190,Complete,30-49,Male,Very important,Of average importance,Agree somewhat,A little bit,Sometimes
+191,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,Very much,Frequently
+192,Complete,18-29,Female,Very important,Very important,Agree somewhat,A little bit,Not very often
+193,Disqualified,30-49,Female,,,,,
+194,Complete,18-29,Female,Very important,Very important,Strongly agree,Very much,Sometimes
+195,Complete,30-49,Male,Of little importance,Very important,Strongly agree,Moderately,Frequently
+196,Complete,50-64,Female,Of little importance,Absolutely essential,Strongly agree,Very much,Frequently
+197,Complete,18-29,Female,Of little importance,Very important,Neither agree nor disagree,Very much,Frequently
+198,Complete,30-49,Male,Of little importance,Very important,Strongly agree,Extremely,Frequently
+199,Complete,30-49,Female,Very important,Absolutely essential,Agree somewhat,Moderately,Sometimes
+200,Complete,30-49,Male,Very important,Very important,Strongly agree,Very much,Frequently
+201,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,Very much,All the time
+202,Disqualified,18-29,Male,,,,,
+203,Complete,30-49,Male,Absolutely essential,Very important,Agree somewhat,A little bit,Sometimes
+204,Disqualified,,,,,,,
+205,Disqualified,50-64,Female,,,,,
+206,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,Extremely,All the time
+207,Complete,50-64,Female,Absolutely essential,Absolutely essential,Strongly agree,Very much,All the time
+208,Complete,50-64,Female,Absolutely essential,Absolutely essential,Strongly agree,Extremely,Frequently
+209,Complete,30-49,Male,Absolutely essential,Absolutely essential,Strongly agree,Very much,Frequently
+210,Complete,18-29,Male,Of little importance,Of average importance,Disagree somewhat,Moderately,Frequently
+211,Complete,30-49,Male,Of little importance,Of average importance,Agree somewhat,A little bit,Sometimes
+212,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,Very much,Frequently
+213,Complete,18-29,Male,Of little importance,Of little importance,Disagree somewhat,Moderately,Not very often
+214,Complete,30-49,Male,Absolutely essential,Absolutely essential,Strongly agree,Extremely,All the time
+215,Complete,30-49,Female,Very important,Very important,Strongly agree,Extremely,All the time
+216,Complete,18-29,Male,Absolutely essential,Very important,Strongly agree,Moderately,Sometimes
+217,Disqualified,18-29,Male,,,,,
+218,Disqualified,30-49,Male,,,,,
+219,Complete,50-64,Female,Absolutely essential,Very important,Strongly agree,Moderately,Sometimes
+220,Complete,50-64,Male,Absolutely essential,Very important,Strongly agree,Very much,Frequently
+221,Disqualified,50-64,Female,,,,,
+222,Complete,30-49,Male,Absolutely essential,Absolutely essential,Strongly agree,A little bit,Sometimes
+223,Complete,30-49,Male,Absolutely essential,Absolutely essential,Strongly agree,Extremely,All the time
+224,Complete,30-49,Female,Absolutely essential,Very important,Strongly agree,Very much,Frequently
+225,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,Extremely,Frequently
+226,Complete,18-29,Male,Absolutely essential,Very important,Agree somewhat,Moderately,Sometimes
+227,Complete,18-29,Male,Absolutely essential,Absolutely essential,Strongly agree,Extremely,All the time
+228,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,Extremely,All the time
+229,Complete,30-49,Female,Absolutely essential,Absolutely essential,Strongly agree,A little bit,Sometimes
+230,Complete,30-49,Male,Absolutely essential,Very important,Strongly agree,A little bit,Sometimes
+231,Disqualified,30-49,Male,,,,,
+232,Complete,30-49,Male,Very important,Of average importance,Strongly agree,Very much,All the time
+233,Disqualified,30-49,Male,,,,,
+234,Disqualified,30-49,Female,,,,,
+235,Complete,30-49,Male,Very important,Very important,Agree somewhat,Moderately,Sometimes
+236,Complete,50-64,Male,Absolutely essential,Very important,Strongly agree,Extremely,All the time
+237,Complete,30-49,Male,Very important,Of average importance,Agree somewhat,Moderately,Sometimes
+238,Complete,18-29,Male,Absolutely essential,Absolutely essential,Strongly agree,Extremely,Frequently
+239,Disqualified,18-29,Male,,,,,
+240,Disqualified,Prefer not to answer,,,,,,
+241,Complete,18-29,Male,Very important,Very important,Agree somewhat,Moderately,Frequently
+242,Complete,18-29,Male,Very important,Very important,Agree somewhat,Very much,Frequently
+243,Complete,18-29,Male,Of little importance,Very important,Agree somewhat,Moderately,Sometimes
+244,Disqualified,,,,,,,
+245,Complete,50-64,Female,Absolutely essential,Absolutely essential,Strongly agree,Extremely,Sometimes
+246,Disqualified,18-29,Male,,,,,

@@ -1,0 +1,6 @@
+"","Levels","Rated","Label_I","Q1_C","Q1_T","Label_II","Q2_C","Q2_T","Label_III","Q3_C","Q3_T","Label_IV","Q4_C","Q4_T","Label_V","Q5_C","Q5_T"
+"1",1,"Bot","Not important at all",0,0,"Not important at all",0,0,"Strongly disagree",0,0,"Not at all",2,4,"Not at all",0,0
+"2",2,"Bot","Of little importance",41,2,"Of little importance",2,2,"Disagree somewhat",7,1,"A little bit",21,13,"Not very often",11,6
+"3",3,"Mid","Of average importance",4,5,"Of average importance",70,9,"Neither agree nor disagree",8,3,"Moderately",66,35,"Sometimes",71,35
+"4",4,"Top","Very important",62,41,"Very important",84,58,"Agree somewhat",40,30,"Very much",56,31,"Frequently",75,49
+"5",5,"Top","Absolutely essential",80,58,"Absolutely essential",31,37,"Strongly agree",132,72,"Extremely",42,23,"All the time",30,16

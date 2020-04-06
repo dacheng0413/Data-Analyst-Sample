@@ -1,0 +1,225 @@
+---
+title: "Caset Study"
+author: "Shicheng_Chen"
+date: "March 18, 2019"
+output: html_document
+---
+First Step: Clean Data
+```{r}
+library(ggpubr)
+library(ggplot2)
+library(scales)
+library(readr)
+library(dplyr)
+library(ggmosaic)
+Data_Analyst_Case_Study_Test_Data <- read_csv("Data Analyst Case Study - Test Data.csv")
+Data_Analyst_Case_Study_Control_Data <- read_csv("Data Analyst Case Study - Control Data.csv")
+Control = Data_Analyst_Case_Study_Control_Data
+Test = Data_Analyst_Case_Study_Test_Data
+Control = subset(Control,Control$Status!='Disqualified')
+Test = subset(Test,Test$Status!='Disqualified')
+ggplot()
+Label_I = c("1Not important at all","2Of little importance","3Of average importance","4Very important","5Absolutely essential")
+Label_II = c("1Not important at all","2Of little importance","3Of average importance","4Very important","5Absolutely essential")
+Label_III = c("1Strongly disagree","2Disagree somewhat","3Neither agree nor disagree","4Agree somewhat","5Strongly agree")
+Label_IV = c("1Not at all","2A little bit","3Moderately","4Very much","5Extremely")
+Label_V = c("1Not at all","2Not very often","3Sometimes","4Frequently","5All the time")
+table(Control$Q1)
+table(Test$Q1)
+Q1_C = c(0,41,4,62,80)
+Q1_T = c(0,2,5,41,58)
+table(Control$Q2)
+table(Test$Q2)
+Q2_C = c(0,2,70,84,31)
+Q2_T = c(0,2,9,58,37)
+table(Control$Q3)
+table(Test$Q3)
+Q3_C = c(0,7,8,40,132)
+Q3_T = c(0,1,3,30,72)
+table(Control$Q4)
+table(Test$Q4)
+Q4_C = c(2,21,66,56,42)
+Q4_T = c(4,13,35,31,23)
+table(Control$Q5)
+table(Test$Q5)
+Q5_C = c(0,11,71,75,30)
+Q5_T = c(0,6,35,49,16)
+Levels = c(1,2,3,4,5)
+Rated = c('1Bot','2Bot','3Mid','4Top','5Top')
+FNL = data.frame(Levels,Rated,
+                 Label_I,Q1_C,Q1_T,
+                 Label_II,Q2_C,Q2_T,
+                 Label_III,Q3_C,Q3_T,
+                 Label_IV,Q4_C,Q4_T,
+                 Label_V,Q5_C,Q5_T)
+levels(FNL$Rated) = c('Bot','Bot','Mid','Top','Top')
+levels(FNL$Label_I)=c("Not important at all","Of little importance","Of average importance","Very important","Absolutely essential")
+levels(FNL$Label_II)=c("Not important at all","Of little importance","Of average importance","Very important","Absolutely essential")
+levels(FNL$Label_III)=c("Strongly disagree","Disagree somewhat","Neither agree nor disagree","Agree somewhat","Strongly agree")
+levels(FNL$Label_IV)=c("Not at all","A little bit","Moderately","Very much","Extremely")
+levels(FNL$Label_V)=c("Not at all","Not very often","Sometimes","Frequently","All the time")
+write.csv(FNL,"Merged.csv")
+```
+
+Questions:
+
+Q1
+```{r}
+
+Pie_Ctl= FNL %>%
+  group_by(Rated) %>%
+  summarise(volume = sum(Q1_C)) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(Rated=factor(Rated, levels = as.character(Rated)))%>%
+  ggplot(aes(x="", y= share, fill=Rated)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+
+Pie_Tst = FNL %>%
+  group_by(Rated) %>%
+  summarise(volume = sum(Q1_T)) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(Rated=factor(Rated, levels = as.character(Rated)))%>%
+  ggplot(aes(x="", y= share, fill=Rated)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+ggarrange(Pie_Ctl,Pie_Tst,labels = c("Control_Q1", "Test_Q1"))
+Q1C = ifelse(Control$Q1 == "Not important at all",1,ifelse(Control$Q1 == "Of little importance",2,ifelse(Control$Q1 == "Of average importance",3,ifelse(Control$Q1 == "Very important",4,5))))
+Q1T = ifelse(Test$Q1 == "Not important at all",1,ifelse(Test$Q1 == "Of little importance",2,ifelse(Test$Q1 == "Of average importance",3,ifelse(Test$Q1 == "Very important",4,5))))
+t.test(Q1C,Q1T,conf.level = 0.9,"two.sided")
+
+```
+
+
+Q2
+```{r}
+
+Pie_Ctl= FNL %>%
+  group_by(Rated) %>%
+  summarise(volume = sum(Q2_C)) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(Rated=factor(Rated, levels = as.character(Rated)))%>%
+  ggplot(aes(x="", y= share, fill=Rated)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+
+Pie_Tst = FNL %>%
+  group_by(Rated) %>%
+  summarise(volume = sum(Q2_T)) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(Rated=factor(Rated, levels = as.character(Rated)))%>%
+  ggplot(aes(x="", y= share, fill=Rated)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+ggarrange(Pie_Ctl,Pie_Tst,labels = c("Control_Q2", "Test_Q2"))
+Q2C = ifelse(Control$Q2 == "Not important at all",1,ifelse(Control$Q2 == "Of little importance",2,ifelse(Control$Q2 == "Of average importance",3,ifelse(Control$Q2 == "Very important",4,5))))
+Q2T = ifelse(Test$Q2 == "Not important at all",1,ifelse(Test$Q2 == "Of little importance",2,ifelse(Test$Q2 == "Of average importance",3,ifelse(Test$Q2 == "Very important",4,5))))
+t.test(Q2C,Q2T,conf.level = 0.9,"two.sided")
+```
+
+
+
+Q3
+```{r}
+Pie_Ctl= FNL %>%
+  group_by(Rated) %>%
+  summarise(volume = sum(Q3_C)) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(Rated=factor(Rated, levels = as.character(Rated)))%>%
+  ggplot(aes(x="", y= share, fill=Rated)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+
+Pie_Tst = FNL %>%
+  group_by(Rated) %>%
+  summarise(volume = sum(Q3_T)) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(Rated=factor(Rated, levels = as.character(Rated)))%>%
+  ggplot(aes(x="", y= share, fill=Rated)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+ggarrange(Pie_Ctl,Pie_Tst,labels = c("Control_Q3", "Test_Q3"))
+Q3C = ifelse(Control$Q3 == "Strongly disagree",1,ifelse(Control$Q3 == "Disagree somewhat",2,ifelse(Control$Q3 == "Neither agree nor disagree",3,ifelse(Control$Q3 == "Agree somewhat",4,5))))
+Q3T = ifelse(Test$Q3 == "Strongly disagree",1,ifelse(Test$Q3 == "Disagree somewhat",2,ifelse(Test$Q3 == "Neither agree nor disagree",3,ifelse(Test$Q3 == "Agree somewhat",4,5))))
+t.test(Q3C,Q3T,conf.level = 0.9,"two.sided")
+
+```
+
+Q4
+
+Data Cleaning
+```{r}
+Control.L = Control
+Test.L = Test
+Control.L$Q1 = ifelse(Control.L$Q1 == "Not important at all","Bot",ifelse(Control.L$Q1 == "Of little importance","Bot",ifelse(Control.L$Q1 == "Of average importance","Mid",ifelse(Control.L$Q1 == "Very important","Top","Top"))))
+Test.L$Q1 = ifelse(Test.L$Q1 == "Not important at all","Bot",ifelse(Test.L$Q1 == "Of little importance","Bot",ifelse(Test.L$Q1 == "Of average importance","Mid",ifelse(Test.L$Q1 == "Very important","Top","Top"))))
+Control.L$Q2 = ifelse(Control.L$Q2 == "Not important at all","Bot",ifelse(Control.L$Q2 == "Of little importance","Bot",ifelse(Control.L$Q2 == "Of average importance","Mid",ifelse(Control.L$Q2 == "Very important","Top","Top"))))
+Test.L$Q2 = ifelse(Test.L$Q2 == "Not important at all","Bot",ifelse(Test.L$Q2 == "Of little importance","Bot",ifelse(Test.L$Q2 == "Of average importance","Mid",ifelse(Test.L$Q2 == "Very important","Top","Top"))))
+Control.L$Q3 = ifelse(Control.L$Q3 == "Strongly disagree","Bot",ifelse(Control.L$Q3 == "Disagree somewhat","Bot",ifelse(Control.L$Q3 == "Neither agree nor disagree","Mid",ifelse(Control.L$Q3 == "Agree somewhat","Top","Top"))))
+Test.L$Q3 = ifelse(Test.L$Q3 == "Strongly disagree","Bot",ifelse(Test.L$Q3 == "Disagree somewhat","Bot",ifelse(Test.L$Q3 == "Neither agree nor disagree","Mid",ifelse(Test.L$Q3 == "Agree somewhat","Top","Top"))))
+```
+
+
+```{r}
+
+ggplot(data = Control.L)+geom_mosaic(aes(x = product(Q1, Age), fill=Q1), na.rm=TRUE)+geom_mosaic(aes(x = product(Q2, Age), fill=Q2), na.rm=TRUE)+geom_mosaic(aes(x = product(Q3, Age), fill=Q3), na.rm=TRUE) + facet_grid(Gender~.)+  labs(x = "Age", title='Control Group Mosaic Plot', fill = 'Levels',y = 'Levels')
+
+ggplot(data = Test.L)+geom_mosaic(aes(x = product(Q1, Age), fill=Q1), na.rm=TRUE)+geom_mosaic(aes(x = product(Q2, Age), fill=Q2), na.rm=TRUE)+geom_mosaic(aes(x = product(Q3, Age), fill=Q3), na.rm=TRUE) + facet_grid(Gender~.)+  labs(x = "Age", title='Test Group Mosaic Plot', fill = 'Levels',y = 'Levels')
+
+```
+
+```{r}
+ggplot(data = Control.L)+geom_mosaic(aes(x = product(Q1, Q4), fill=Q1), na.rm=TRUE)+geom_mosaic(aes(x = product(Q2, Q4), fill=Q2), na.rm=TRUE)+geom_mosaic(aes(x = product(Q3, Q4), fill=Q3), na.rm=TRUE) +  labs(x = "Science Enthusiasts", title='Control Group Mosaic Plot', fill = 'Levels',y = 'Levels')
+
+ggplot(data = Test.L)+geom_mosaic(aes(x = product(Q1, Q4), fill=Q1), na.rm=TRUE)+geom_mosaic(aes(x = product(Q2, Q4), fill=Q2), na.rm=TRUE)+geom_mosaic(aes(x = product(Q3, Q4), fill=Q3), na.rm=TRUE) +  labs(x = "Science Enthusiasts", title='Test Group Mosaic Plot', fill = 'Levels',y = 'Levels')
+
+ggplot(data = Control.L)+geom_mosaic(aes(x = product(Q1, Q5), fill=Q1), na.rm=TRUE)+geom_mosaic(aes(x = product(Q2, Q5), fill=Q2), na.rm=TRUE)+geom_mosaic(aes(x = product(Q3, Q5), fill=Q3), na.rm=TRUE) +  labs(x = "Science Reading", title='Control Group Mosaic Plot', fill = 'Levels',y = 'Levels')
+
+ggplot(data = Test.L)+geom_mosaic(aes(x = product(Q1, Q5), fill=Q1), na.rm=TRUE)+geom_mosaic(aes(x = product(Q2, Q5), fill=Q2), na.rm=TRUE)+geom_mosaic(aes(x = product(Q3, Q5), fill=Q3), na.rm=TRUE) +  labs(x = "Science Reading", title='Test Group Mosaic Plot', fill = 'Levels',y = 'Levels')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
