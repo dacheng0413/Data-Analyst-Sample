@@ -1,0 +1,415 @@
+---
+title: "Stats101c Final project"
+author: "Shan, Zhong"
+date: "11/4/2018"
+output: html_document
+---
+
+```{r}
+library(readr)
+HTestLastNoY <- read.csv("HTestLastNoY.csv", header = TRUE)
+HTrainLast <- read.csv("HTrainLast.csv", header = TRUE)
+head(HTrainLast)
+response=HTrainLast$affordabilitty
+features=HTrainLast[,-which(names(HTrainLast)=="affordabilitty")]
+
+#check data type
+library(ggplot2)
+types=sapply(HTrainLast, class)
+types
+df.types=data.frame(table(types),row.names=NULL)
+
+#visualization
+options(repr.plot.width=8,repr.plot.height=4)
+ggplot(data=df.types, aes(x=types, y=Freq/sum(Freq))) + 
+  geom_bar(stat="identity",width = 0.2)
+
+```
+
+```{r}
+#check missing value
+num.NA <- sort(colSums(sapply(HTrainLast, is.na)))
+dfnum.NA <- data.frame(ind = c(1:length(num.NA)),
+                       percentage = num.NA/nrow(HTrainLast),
+                       per80 = num.NA/nrow(HTrainLast)>=0.2,
+                           name = names(num.NA),
+                       row.names = NULL) # convert to data.frame
+options(repr.plot.width=8, repr.plot.height=4)
+ggplot(data = dfnum.NA, aes(x=ind, y=percentage)) + 
+  geom_bar(aes(fill=per80), stat="identity") + 
+  scale_x_discrete(name ="column names", 
+                   limits=dfnum.NA$name)+
+  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=.5),
+        legend.position = "none") +
+  geom_hline(yintercept = 0.2) + 
+  ggtitle("percentage of missing")
+```
+
+```{r}
+#print(dfnum.NA)
+#Delete those rows with more than 80% missing
+#HTrainLast[, dfnum.NA$per80] <- NULL
+#sort(colSums(is.na(HTrainLast)))
+```
+
+```{r}
+library(car)
+train1=HTrainLast
+vif_func<-function(in_frame,thresh=10,trace=T,...){
+
+  library(fmsb)
+  
+  if(any(!'data.frame' %in% class(in_frame))) in_frame<-data.frame(in_frame)
+  
+  #get initial vif value for all comparisons of variables
+  vif_init<-NULL
+  var_names <- names(in_frame)
+  for(val in var_names){
+      regressors <- var_names[-which(var_names == val)]
+      form <- paste(regressors, collapse = '+')
+      form_in <- formula(paste(val, '~', form))
+      vif_init<-rbind(vif_init, c(val, VIF(lm(form_in, data = in_frame, ...))))
+      }
+  vif_max<-max(as.numeric(vif_init[,2]), na.rm = TRUE)
+
+  if(vif_max < thresh){
+    if(trace==T){ #print output of each iteration
+        prmatrix(vif_init,collab=c('var','vif'),rowlab=rep('',nrow(vif_init)),quote=F)
+        cat('\n')
+        cat(paste('All variables have VIF < ', thresh,', max VIF ',round(vif_max,2), sep=''),'\n\n')
+        }
+    return(var_names)
+    }
+  else{
+
+    in_dat<-in_frame
+
+    #backwards selection of explanatory variables, stops when all VIF values are below 'thresh'
+    while(vif_max >= thresh){
+      
+      vif_vals<-NULL
+      var_names <- names(in_dat)
+        
+      for(val in var_names){
+        regressors <- var_names[-which(var_names == val)]
+        form <- paste(regressors, collapse = '+')
+        form_in <- formula(paste(val, '~', form))
+        vif_add<-VIF(lm(form_in, data = in_dat, ...))
+        vif_vals<-rbind(vif_vals,c(val,vif_add))
+        }
+      max_row<-which(vif_vals[,2] == max(as.numeric(vif_vals[,2]), na.rm = TRUE))[1]
+
+      vif_max<-as.numeric(vif_vals[max_row,2])
+
+      if(vif_max<thresh) break
+      
+      if(trace==T){ #print output of each iteration
+        prmatrix(vif_vals,collab=c('var','vif'),rowlab=rep('',nrow(vif_vals)),quote=F)
+        cat('\n')
+        cat('removed: ',vif_vals[max_row,1],vif_max,'\n\n')
+        flush.console()
+        }
+
+      in_dat<-in_dat[,!names(in_dat) %in% vif_vals[max_row,1]]
+
+      }
+
+    return(names(in_dat))
+    
+    }
+  
+  }
+col<- vif_func(in_frame=df,thresh=5,trace=T)
+
+#From checking the variance inflation factor (VIF), both pairs has VIF < 5, so we can not say these pairs of variables are collinearily.
+
+
+```
+
+
+
+```{r}
+library(randomForest)
+library(caret)
+library(dplyr)
+train1=HTrainLast
+test=HTestLastNoY
+NumericVariable=c("MSSubClass","LotFrontage","LotArea","OverallQual","OverallCond","YearRemodAdd","MasVnrArea","BsmtFinSF2","BsmtUnfSF","TotalBsmtSF","X2ndFlrSF","LowQualFinSF","BsmtFullBath","BsmtHalfBath","FullBath","HalfBath","BedroomAbvGr","KitchenAbvGr","TotRmsAbvGrd","Fireplaces","GarageYrBlt","GarageCars","GarageArea","WoodDeckSF","OpenPorchSF","EnclosedPorch","X3SsnPorch","ScreenPorch")
+NumericIndex=which(names(train1) %in%NumericVariable)
+for(i in 1:(ncol(train1))){
+  if(names(train1)[i] %in% NumericVariable){
+  train1[,i]=ifelse(is.na(train1[,i]),mean(train1[,i],na.rm = T),train1[,i])
+  }
+}
+
+train1$affordabilitty=ifelse(is.na(train1$affordabilitty),"2",train1$affordabilitty)
+train1$affordabilitty=ifelse(train1$affordabilitty=="1","Affordable","Unaffordable")
+train1$affordabilitty=as.factor(train1$affordabilitty)
+#summary(train1[,NumericIndex])
+
+for(i in 1:(ncol(test))){
+  if(names(test)[i] %in% NumericVariable){
+  test[,i]=ifelse(is.na(test[,i]),mean(test[,i],na.rm = T),test[,i])
+  }
+}
+
+select=sample(1:nrow(train1),nrow(train1)*0.7,replace = F)
+cor.train=train1[select,]
+cor.test=train1[-select,]
+train_control <- trainControl(method="repeatedcv", number=10, savePredictions = TRUE,repeats = 32)
+model <- randomForest(affordabilitty ~ MSSubClass+LotFrontage+LotArea+OverallQual+OverallCond+YearRemodAdd+MasVnrArea+BsmtFinSF2+BsmtUnfSF+TotalBsmtSF+X2ndFlrSF+LowQualFinSF+BsmtFullBath+BsmtHalfBath+FullBath+ HalfBath+BedroomAbvGr+KitchenAbvGr+TotRmsAbvGrd+Fireplaces+GarageYrBlt+GarageCars+GarageArea+WoodDeckSF+OpenPorchSF+EnclosedPorch+X3SsnPorch+ScreenPorch , data = train1, importance=TRUE)
+varImpPlot(model)
+importance(model, type = 1)
+
+RF1=randomForest(affordabilitty~MSSubClass+LotFrontage+LotArea+OverallQual+OverallCond+YearRemodAdd+MasVnrArea+BsmtFinSF2+BsmtUnfSF+TotalBsmtSF+X2ndFlrSF+LowQualFinSF+BsmtFullBath+BsmtHalfBath+FullBath+HalfBath+BedroomAbvGr+KitchenAbvGr+TotRmsAbvGrd+Fireplaces+GarageYrBlt+GarageCars+GarageArea+WoodDeckSF+OpenPorchSF+EnclosedPorch+X3SsnPorch+ScreenPorch,data=cor.train,importance = TRUE,method = 'class',trControl=train_control)
+confusionMatrix(predict(RF1,cor.test),cor.test$affordabilitty)
+sort(RF1$importance[,4])
+sort(RF1$importance[,3])
+#OverallQual+FullBath+TotalBsmtSF+GarageYrBlt+GarageArea+YearRemodAdd+X2ndFlrSF+LotArea+Fireplaces+OpenPorchSF+BsmtUnfSF+LotFrontage+TotRmsAbvGrd
+RF2=randomForest(affordabilitty~OverallQual+FullBath+TotalBsmtSF+GarageYrBlt+YearRemodAdd+X2ndFlrSF+GarageArea+GarageCars+LotArea+Fireplaces+TotRmsAbvGrd+OpenPorchSF+BsmtUnfSF+MasVnrArea+MSSubClass,data=train1)
+sol1=predict(RF2,newdata = test)
+sum(sol1!=submission18$affordabilitty)
+sum(sol1!=submission19$affordabilitty)
+sum(sol1!=submission24$affordabilitty)
+sum(submission19$affordabilitty != mostAcc$affordabilitty)
+
+RF3=randomForest(affordabilitty~LotFrontage+LotArea+OverallQual+YearRemodAdd+BsmtUnfSF+TotalBsmtSF +X2ndFlrSF+FullBath+TotRmsAbvGrd+Fireplaces+OpenPorchSF+GarageYrBlt+GarageCars+GarageArea,data = train1)
+sol2=predict(RF3,newdata = test)
+sum(sol1 != sol2)
+sum(mostAcc2!=sol2)
+sum(sol2!=mostAcc$affordabilitty)
+
+RF4=randomForest(affordabilitty~OverallQual+FullBath+YearRemodAdd+GarageCars+Fireplaces,data = train1)
+sol3=predict(RF4,newdata = test)
+sum(sol3 != submission18$affordabilitty)
+
+library(tidyverse)
+my_submission <- data_frame('Ob' = test$Ob, 'affordabilitty' = sol1)
+
+# save our file
+write_csv(my_submission, 'submission24.csv')
+```
+
+
+
+```{r}
+library(randomForest)
+library(caret)
+library(dplyr)
+#choose numeric value
+NumericVariable=c("affordabilitty","MSSubClass","LotFrontage","LotArea","OverallQual","OverallCond","YearRemodAdd","MasVnrArea","BsmtFinSF2","BsmtUnfSF","TotalBsmtSF","X2ndFlrSF","LowQualFinSF","BsmtFullBath","BsmtHalfBath","FullBath","HalfBath","BedroomAbvGr","KitchenAbvGr","TotRmsAbvGrd","Fireplaces","GarageYrBlt","GarageCars","GarageArea","WoodDeckSF","OpenPorchSF","EnclosedPorch","X3SsnPorch","ScreenPorch")
+NumericIndex=which(names(train1) %in%NumericVariable)
+ctrain=train1[,NumericIndex]
+
+
+###########
+###########
+###########
+#Get out NA
+for(i in 1:(ncol(ctrain)-1)){
+  ctrain[,i]=ifelse(is.na(ctrain[,i]),mean(ctrain[,i],na.rm = T),ctrain[,i])
+}
+
+ctrain$affordabilitty=ifelse(is.na(ctrain$affordabilitty),"2",ctrain$affordabilitty)
+ctrain$affordabilitty=ifelse(ctrain$affordabilitty=="1","Affordable","Unaffordable")
+ctrain$affordabilitty=as.factor(ctrain$affordabilitty)
+summary(train1)
+train1[,NumericIndex]=ctrain
+###########
+###########
+###########
+#seperate by 30% and 70% for training data.
+select=sample(1:nrow(ctrain),nrow(ctrain)*0.7,replace = F)
+cor.train=train1[select,]
+cor.test=train1[-select,]
+train_control <- trainControl(method="repeatedcv", number=10, savePredictions = TRUE)
+
+
+RFmodel=randomForest(affordabilitty~.,data=cor.train, method="class",trControl=train_control, tuneLength = 5)
+pred_ldam=predict(RFmodel, newdata=cor.test)
+matr=confusionMatrix(data=pred_ldam, as.factor(cor.test$affordabilitty))
+pred_ldam=predict(RFmodel, newdata=HTestLastNoY)
+table(pred_ldam)
+############
+############
+############
+#GLM
+glmAccuracy=NA
+for(i in names(ctrain[,-29])){
+   fmla <- as.formula(paste0("affordabilitty ~ ", i))
+   glm=train(fmla,data=cor.train, method="glm",family='binomial',trControl=train_control, tuneLength = 5)
+   pred_glm=predict(glm, newdata=cor.test)
+   matr=confusionMatrix(data=pred_glm, as.factor(cor.test$affordabilitty))
+   glmAccuracy[i]=matr$overall[[1]][1]
+}
+glmAccuracy
+#############
+#############
+#LDA
+ldaAccuracy=NA
+for(i in names(ctrain[,-29])){
+   fmla <- as.formula(paste0("affordabilitty ~ ", i))
+   ldam=train(fmla,data=cor.train, method="lda",trControl=train_control, tuneLength = 5)
+   pred_ldam=predict(ldam, newdata=cor.test)
+   matr=confusionMatrix(data=pred_ldam, as.factor(cor.test$affordabilitty))
+   ldaAccuracy[i]=matr$overall[[1]][1]
+}
+ldaAccuracy
+##############
+##############
+#QDA
+qdaAccuracy=NA
+for(i in names(ctrain[,-29])){
+   fmla <- as.formula(paste0("affordabilitty ~ ", i))
+   qdam=train(fmla,data=cor.train, method="qda",trControl=train_control, tuneLength = 5)
+   pred_qdam=predict(qdam, newdata=cor.test)
+   matr=confusionMatrix(data=pred_qdam, as.factor(cor.test$affordabilitty))
+   qdaAccuracy[i]=matr$overall[[1]][1]
+}
+qdaAccuracy
+
+##############
+##############
+#RF
+rfAccuracy=NA
+for(i in names(ctrain[,-29])){
+   fmla <- as.formula(paste0("affordabilitty ~ ", i))
+   rf=randomForest(fmla,data=cor.train, method="class",trControl=train_control, tuneLength = 5)
+   pred_rf=predict(rf, newdata=cor.test)
+   matr=confusionMatrix(data=pred_rf, as.factor(cor.test$affordabilitty))
+   rfAccuracy[i]=matr$overall[[1]][1]
+}
+rfAccuracy
+
+##############
+#############
+Final=data.frame(glmAccuracy=glmAccuracy,ldaAccuracy=ldaAccuracy,qdaAccuracy=qdaAccuracy,rfAccuracy=rfAccuracy)
+Mean=apply(Final,1,mean)
+Final=data.frame(Final,MeanAccuracy=Mean)
+Final=Final[-1,]
+Final=Final[order(-Final$MeanAccuracy),]
+Final
+apply(Final,2,mean)
+
+```
+
+
+
+
+
+```{r}
+#MSSubClass, LotFrontage, LotArea, OverallQual,  OverallCond , YearRemodAdd, MasVnrArea
+
+library(caret)
+library(klaR)
+library(boot)
+library(randomForest)
+library(Metrics)
+
+train1=HTrainLast
+test=HTestLastNoY
+train1$affordabilitty=ifelse(is.na(train1$affordabilitty),"2",train1$affordabilitty)
+train1$affordabilitty=ifelse(train1$affordabilitty=="1","Affordable","Unaffordable")
+train1$affordabilitty=as.factor(train1$affordabilitty)
+train1$MSSubClass=ifelse(is.na(train1$MSSubClass),mean(train1$MSSubClass),train1$MSSubClass)
+train1$LotFrontage=ifelse(is.na(train1$LotFrontage),mean(train1$LotFrontage,na.rm=T),train1$LotFrontage)
+train1$LotArea=ifelse(is.na(train1$LotArea),mean(train1$LotArea,na.rm=T),train1$LotArea)
+train1$OverallQual=ifelse(is.na(train1$OverallQual),mean(train1$OverallQual,na.rm=T),train1$OverallQual)
+train1$OverallCond=ifelse(is.na(train1$OverallCond),mean(train1$OverallCond,na.rm=T),train1$OverallCond)
+train1$YearRemodAdd=ifelse(is.na(train1$YearRemodAdd),mean(train1$YearRemodAdd,na.rm=T),train1$YearRemodAdd)
+train1$MasVnrArea=ifelse(is.na(train1$MasVnrArea),mean(train1$MasVnrArea,na.rm=T),train1$MasVnrArea)
+
+
+test$MSSubClass=ifelse(is.na(test$MSSubClass),mean(test$MSSubClass),test$MSSubClass)
+test$LotFrontage=ifelse(is.na(test$LotFrontage),mean(test$LotFrontage,na.rm=T),test$LotFrontage)
+test$LotArea=ifelse(is.na(test$LotArea),mean(test$LotArea,na.rm=T),test$LotArea)
+test$OverallQual=ifelse(is.na(test$OverallQual),mean(test$OverallQual,na.rm=T),test$OverallQual)
+test$OverallCond=ifelse(is.na(test$OverallCond),mean(test$OverallCond,na.rm=T),test$OverallCond)
+test$YearRemodAdd=ifelse(is.na(test$YearRemodAdd),mean(test$YearRemodAdd,na.rm=T),test$YearRemodAdd)
+test$MasVnrArea=ifelse(is.na(test$MasVnrArea),mean(test$MasVnrArea,na.rm=T),test$MasVnrArea)
+
+train_control <- trainControl(method="repeatedcv", number=10, repeats=3)
+
+
+glm=glm(affordabilitty~ MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,family = 'binomial',data=train1)
+lda=lda(affordabilitty~ MSSubClass + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,na.action="na.omit")
+RF=randomForest(affordabilitty~  MSSubClass + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea, data=train1, trControl=train_control, method="class")
+print(RF)
+qda=qda(affordabilitty~ MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1)
+
+index=sample(nrow(train1),nrow(train1)*0.5,replace = F)
+t.train1=train1[index,]
+t.test=train1[-index,]
+predrf=predict(lda,newdata = t.test)
+confusionMatrix(predrf$class,as.factor(t.test$affordabilitty))
+predn=predict(RF,test)
+
+#K-folded
+tc=trainControl(method = 'cv',number=10)
+k_folded_RandomForest=train(affordabilitty~MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,trainControl=tc,method="rf")
+print(k_folded_RandomForest)
+
+k_folded_lda=train(affordabilitty~MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,trainControl=tc,method="lda")
+print(k_folded_lda)
+
+k_folded_qda=train(affordabilitty~MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,trainControl=tc,method="qda")
+print(k_folded_qda)
+
+k_folded_glm=1-(cv.glm(train1,glm,K=10)$delta)
+print(k_folded_glm)
+
+
+ct <- table(na.omit(train1$affordabilitty), lda$class)# percent correct for each category of affordabilitty
+diag(prop.table(ct, 1))
+sum(diag(prop.table(ct)))# total percent correct
+
+#partimat(affordabilitty~ MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,method="lda")
+
+#loocv
+tc=trainControl(method = 'LOOCV')
+LOOCV_rf=train(affordabilitty~MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,trainControl=tc,method="rf")
+print(LOOCV_rf)
+LOOCV_lda=train(affordabilitty~MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,trainControl=tc,method="lda")
+print(LOOCV_lda)
+LOOCV_qda=train(affordabilitty~MSSubClass + LotFrontage + LotArea + OverallQual + OverallCond + YearRemodAdd + MasVnrArea,data=train1,trainControl=tc,method="qda")
+print(LOOCV_qda)
+#k_folded_glm=1-(cv.glm(train1,glm,K=3500)$delta)
+#print(k_folded_glm)
+
+#
+```
+
+```{r}
+#variable analysis: cts & cts; categ & categ; cts & categ
+  #cts: MSSubClass + LotFrontage + LotArea
+response=na.omit(response)
+class(response)
+table(response)
+
+# affordability with LotArea
+summary(HTrainLast$LotArea)
+sd(HTrainLast$LotArea) #extremely positive screwed... (How to deal with outliers)
+
+
+plothist <- function(data, nbins){
+    options(repr.plot.width=8, repr.plot.height=2)
+    p <- ggplot(data, aes(x=LotArea))
+    p <- p + geom_histogram(aes(y=..count../sum(..count..)),
+                           bins = nbins,
+                           color = "grey",
+                           fill="cornsilk")
+    p + theme_dark() + ylab("Normalized_Count") + ggtitle(paste(paste("LotArea : ", nbins), " bins histogram" ))  
+}
+plothist(HTrainLast, 100)
+
+options(repr.plot.width=8, repr.plot.height=4)
+ggplot(HTrainLast, aes(x=LotArea, fill=affordabilitty)) + 
+geom_histogram(bins = 100, color = "grey") + theme_dark() + 
+geom_freqpoly(bins = 30, color = "white")
+
+
+```
+
+```{r}
+which(submission4$affordabilitty!=sub3$affordabilitty)
+```
