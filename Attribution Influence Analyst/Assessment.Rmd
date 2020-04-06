@@ -1,0 +1,295 @@
+---
+title: "Earnin Assessment"
+author: "Shicheng Chen"
+date: "2020/1/25"
+output: html_document
+---
+```{r message=FALSE,warning = FALSE,echo=F}
+#Import the libraries I need
+library(readr)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(plotly)
+library('forecast')
+#Read Data
+attribution <- read_csv("attribution.csv")
+device <- read_csv("device.csv")
+user_device <- read_csv("user_device.csv")
+user <- read_csv("user.csv")
+sale <- read_csv("sale.csv")
+item <- read_csv("item.csv")
+#Formatting column names
+colnames(attribution) = c("attribution_created_on","campaign","device_id")
+colnames(device) = c("device_created_on","device_type","device_id","operating_system")
+colnames(user) = c("user_created_on","user_id","name")
+colnames(sale) = c("amount","sale_created_on","user_id","sale_id","date","weekday")
+#Formatting Dates
+attribution$a_date = as.Date(attribution$attribution_created_on,"%m/%d/%y")
+device$d_date = as.Date(device$device_created_on,"%m/%d/%y")
+user$u_date = as.Date(user$user_created_on,"%m/%d/%y")
+```
+
+```{r message=FALSE,warning = FALSE,echo=F}
+#Checking duplication data
+sum(duplicated(attribution))
+sum(duplicated(device))
+sum(duplicated(user_device))
+sum(duplicated(user))
+sum(duplicated(sale))
+sum(duplicated(item))
+#item has duplication is reasonable, because one user can sell same item multiple times.
+```
+
+```{r}
+#Check if user id has a device
+user_with_device = cbind(user[1:3809,],user_device$device_id)
+colnames(user_with_device)[5]="device_id"
+user_with_device = merge(user_with_device,device, by="device_id", all.x = T)
+#There are 5 users without device,3891-3895, and dop those
+```
+
+```{r message=FALSE,warning = FALSE,echo=F}
+#Function 1, get the date which user register after a campaign.
+get_date_range=function(a,b){
+  for(i in 1:3809){
+  if(b$device_id[i] %in% a$device_id){
+    c = a[a$device_id == b$device_id[i],]
+    c = c[order(c$a_date),]
+    mini = 100000
+    camp = NA
+    for(j in 1:nrow(c)){
+      if(as.numeric(c$a_date[j]-b$u_date[i]) >= 0){
+        mini = min(mini,as.numeric(c$a_date[j]-b$u_date[i]))
+        camp = c$campaign[j]
+        adate = j
+      }#If there is a campaign date earlier than register date, then save it.
+    }
+    if(mini == 100000){
+      b$date_range[i] = NA
+      b$campain[i] = NA
+    }
+    else{
+      b$date_range[i] = mini #save the date
+      b$campain[i] = camp #save the campaign name
+    }
+  }
+  else{
+    b$date_range[i] = NA
+    b$campain[i] = NA
+  }
+}
+  return(b)
+}
+
+#Function 2, check the date range is over the average register date of that campaign. 
+check_date_valid= function(attribution,user_from_campaign){
+  uniq_champ = unique(user_from_campaign$campain) #Get the distinct campaign name
+  for(i in 1:length(uniq_champ)){
+    tmprows = attribution[attribution$campaign==uniq_champ[i],]
+    tmprows[order(tmprows$a_date),]
+    datediff = rep(nrow(tmprows))
+    for(j in 1:nrow(tmprows)-1){
+      datediff[j] = as.numeric(tmprows$a_date[j+1]-tmprows$a_date[j])
+    }
+    validate = round(sum(datediff)/nrow(tmprows),0) #get the avergae date of each campaign.
+    user_from_campaign$Valid[which(user_from_campaign$campain==uniq_champ[i])]=ifelse(user_from_campaign[which(user_from_campaign$campain==uniq_champ[i]),]$date_range <= validate,T,F)# if the date range less than the validate, True, otherwise False.
+  }
+  return(user_from_campaign)
+}
+
+#Function 3 get devcie type into sale
+get_device_type = function(user_with_device,sale){
+
+  for(i in 1:nrow(sale)){
+  if(sale$user_id[i] %in% user_with_device$user_id){
+    c = user_with_device[user_with_device$user_id == sale$user_id[i],]
+    c = c[order(c$u_date),]
+    for(j in 1:nrow(c)){
+      if(as.numeric(c$u_date[j]-sale$date[i]) <= 0){
+        sale$device_type[i] = c$device_type[j]
+        break
+      }
+    }
+   }
+  }
+  return(sale)
+}
+
+#Function 4 get is from campaign into sale
+get_from_campaign = function(user_from_campaign,sale){
+
+  for(i in 1:nrow(sale)){
+  if(sale$user_id[i] %in% user_from_campaign$user_id){
+    c = user_from_campaign[user_from_campaign$user_id == sale$user_id[i],]
+    c = c[order(c$u_date),]
+    for(j in 1:nrow(c)){
+      if(as.numeric(c$u_date[j]-sale$date[i]) <= 0){
+        sale$campaign[i] = T
+        break
+      }
+    }
+   }
+  }
+  return(sale)
+}
+```
+
+```{r}
+#Delete the device does not have user in attribution
+attribution = attribution[attribution$device_id %in% user_with_device$device_id,]
+attribution=attribution[order(attribution$campaign,attribution$a_date),]
+user_with_device=get_date_range(attribution,user_with_device)
+user_from_campaign = user_with_device[which(user_with_device$campain != 'NA'),]
+user_from_campaign$Valid = NA
+user_from_campaign = check_date_valid(attribution,user_from_campaign)
+table(user_from_campaign$Valid)
+```
+There are 3809 users with device, and 1888 of them created user after a campaign roughly.
+
+```{r}
+#Drop the 344 with not valid date
+user_from_campaign=user_from_campaign[-which(user_from_campaign$Valid == F),]
+user_from_campaign$year = year(user_from_campaign$u_date)
+user_from_campaign$month = month(user_from_campaign$u_date)
+```
+
+```{r message=FALSE,warning = FALSE}
+user_from_campaign %>% group_by(year) %>% count() %>% ggplot(aes(x = year, y = n))+ geom_line(color = 'skyblue2',size = 3)+geom_point(color='gray4',size = 3)+geom_text(aes(label=n),hjust=1, vjust=-0.001)+ggtitle("User from compaign increased by year")+xlab("Year from 2013 to 2017")+ylab("Number of users join from Campaign")
+#From the plot below we can see that from year 2013 to 2016, the campaign works well and increase year by year, the drop on the year of 2017 becuase we do not have a full year of 2017, we only have the first 2 month.
+```
+
+```{r message=FALSE,warning = FALSE,results='hide'}
+user_count = user_from_campaign %>% group_by(year, month) %>% count()
+date = ts(1:41, frequency = 12, start=c(2013,10))
+user_count_time = data.frame(Time = date, Number = user_count$n)
+user_count_time %>%
+  ggplot( aes(x=Time, y=Number)) +
+    geom_area(fill="skyblue2", alpha=0.5) +
+    geom_line(color="skyblue2") +ggtitle("User increase by month")+
+    ylab("Number of user") +geom_vline(xintercept = c(3,15,27,39),color = "navyblue")
+#From the plot below we can compare by month and find out the user join to the app in increase month by month. Which means our campaign work better by time.
+```
+
+```{r message=FALSE,warning = FALSE}
+#If we only collect the first two month user data and compare them.
+user_from_campaign[(user_from_campaign$month==1 | user_from_campaign$month==2),] %>% group_by(year) %>% count() %>% ggplot(aes(x = year, y = n)) + geom_bar(stat = "identity", fill ='skyblue2')+ geom_text(aes(label=n), position=position_dodge(width=0.9), size=4)+ggtitle("User increase in Jan and Feb")+ylab("User increase")
+```
+
+
+```{r}
+user_from_campaign %>% group_by(year, month) %>% count() %>% ggplot(aes(x = year, y = n))+geom_boxplot(aes(color = factor(year)), size = 1)+ggtitle("Boxplot of new user from campaign")+xlab("Year")+ylab("Number of user")+scale_x_continuous(breaks = c(1:12))
+#In the box plot we can find out that the monthly increase of member is growth from 2013 to 2017, and the avearage growth by month also increase.
+```
+
+
+```{r}
+nrow(user_from_campaign)/nrow(attribution)
+#The overall register rate is 38.3%.
+attr_group = attribution %>% group_by(campaign) %>% count() 
+user_group = user_from_campaign %>% group_by(campain) %>% count()
+attr_group=attr_group[order(attr_group$campaign),]
+user_group=user_group[order(user_group$campain),]
+regis_rate = data.frame(campaign = attr_group$campaign, rate = round(user_group$n/attr_group$n,4)*100,regist_num = user_group$n)
+regis_rate=regis_rate[order(-regis_rate$rate),]
+regis_rate$score = seq(50,0.5,-0.5)
+regis_rate=regis_rate[order(-regis_rate$regist_num),]
+regis_rate$score = regis_rate$score+seq(50,0.5,-0.5)
+regis_rate$campaign[1:10] #Top 10 highest score campaign
+```
+
+```{r}
+#Add devcie type into sale
+sale_item = merge(sale, item, by = "sale_id", all = T)
+sale_item$amount[duplicated(sale_item$sale_id)]=NA
+sale$device_type = NA
+```
+
+
+```{r message=FALSE,warning = FALSE}
+sale$year = year(sale$date)
+sale %>% group_by(year) %>% summarise(amount = round(sum(amount),2)) %>% ggplot(aes(x = year, y = amount))+geom_line(size = 3, color= 'skyblue2')+ggtitle("Monthly amount by year")+xlab("Year")+ylab("sale amount")
+```
+
+```{r message=FALSE,warning = FALSE}
+sale$month = month(sale$date)
+sale[sale$month==c(1,2),] %>% group_by(year) %>% summarise(amount = round(sum(amount)*2,2)) %>% ggplot(aes(x = year, y = amount)) + geom_bar(stat = "identity", fill ='skyblue2')+geom_text(aes(label=amount), position=position_dodge(width=0.9))+ggtitle("Sale Amount in Jan and Feb")+ylab("Sale Amount")
+```
+```{r message=FALSE,warning = FALSE}
+sale_amt = sale %>% group_by(year, month) %>% summarise(amount = round(sum(amount),2))
+date = ts(1:40, frequency = 12, start=c(2013,11))
+sale_amt = data.frame(Time = date, Amount = sale_amt$amount)
+sale_amt %>%
+  ggplot( aes(x=Time, y=Amount)) +
+    geom_area(fill="skyblue2", alpha=0.5) +
+    geom_line(color="skyblue2") +ggtitle("Amount by month")+
+    ylab("Amount") +geom_vline(xintercept = c(2,14,26,38),color = "navyblue")
+```
+
+```{r}
+sale_amt = sale %>% group_by(year, month) %>% summarise(amount = round(sum(amount)/(length(amount)),2))
+date = ts(1:40, frequency = 12, start=c(2013,11))
+sale_amt = data.frame(Time = date, Amount = sale_amt$amount)
+sale_amt %>%
+  ggplot( aes(x=Time, y=Amount)) +
+    geom_area(fill="skyblue2", alpha=0.5) +
+    geom_line(color="skyblue2") +ggtitle("Average amount by month")+
+    ylab("Amount") +geom_vline(xintercept = c(2,14,26,38),color = "navyblue")
+
+```
+
+```{r}
+#Hypothese test on is 2017 data significant than before
+sale_amt
+history_amount = sale_amt$Amount[1:38]
+test_amount = sale_amt$Amount[39:40]
+t.test(history_amount,test_amount)
+```
+
+```{r message=FALSE,warning = FALSE}
+#Time series plot
+sale=get_device_type(user_with_device,sale)
+sale_amt_ts = ts(sale_amt$Amount,start = c(2013,11),end = c(2017,2),frequency = 12)
+plot(sale_amt_ts)
+monthplot(sale_amt_ts)
+seasonplot(sale_amt_ts)
+fit<-stl(log(sale_amt_ts),s.window = 'period')
+plot(fit)
+```
+
+```{R}
+#Using HoltWinters time series model to predict the next year sale because the plot shows it has seasonal effect.
+sale_forecast<-HoltWinters(sale_amt_ts)
+
+sale_forecast2<-forecast(sale_forecast,h=12)
+
+plot(sale_forecast2)
+
+```
+```{r}
+#Change weekday in to factor
+wkday = c('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')
+sale$weekday = wkday[sale$weekday+1]
+```
+
+
+```{r}
+#Linear regression
+model = glm(sale$amount~sale$device_type+sale$weekday)
+summary(model)
+anova(model)
+plot(model)
+```
+
+```{r}
+sale %>% group_by(device_type) %>% summarise(amount = round(sum(amount),2)) %>% ggplot(aes(x = device_type, y = amount)) + geom_bar(stat = "identity", fill ='skyblue2')+geom_text(aes(label=amount), position=position_dodge(width=0.9))+ggtitle("Total sale amount by device type")
+```
+
+```{r message=FALSE,warning = FALSE}
+sale$campaign = ifelse(sale$user_id %in% user_from_campaign$user_id,T,F)
+sale %>% group_by(campaign,year) %>% summarise(amount = round(sum(amount),2)) %>% ggplot(aes(x = campaign, y = amount,fill = factor(year))) + geom_bar(stat = "identity",position="dodge")
+```
+
+```{r}
+table(sale$campaign,sale$device_type)
+```
