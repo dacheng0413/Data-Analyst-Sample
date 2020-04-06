@@ -1,0 +1,263 @@
+---
+title: "UCLA Assessment"
+author: "Shicheng_Chen"
+date: "April 13, 2019"
+output: html_document
+---
+#Loading Package
+```{r}
+library(readr)
+library(dplyr)
+library(highcharter)
+library(tidyverse)
+library(ggplot2)
+library(ggpubr)
+library(reshape2)
+```
+
+#Loading Data
+```{r}
+data_a <- read_csv("imm10_a.csv")
+data_b <- read_csv("imm10_b.csv")
+data_l <- read_csv("imm10_lev2.csv")
+```
+
+#Data Cleaning
+##Checking duplications.
+```{r}
+which(duplicated(data_a))
+which(duplicated(data_b))
+which(duplicated(data_l))
+
+```
+
+##Combiming data as Public and Private schools
+```{r}
+data_sch = rbind(data_a,data_b)
+data_pub = subset(data_sch, data_sch$SCHID %in% subset(data_l,data_l$MPUBLIC == 1)$SCHID)
+data_prv = subset(data_sch, data_sch$SCHID %in% subset(data_l,data_l$MPUBLIC != 1)$SCHID)
+```
+
+##Checking missing values
+```{r}
+summary(data_pub)
+summary(data_prv)
+summary(data_l)
+```
+
+#EDA Over all 
+##Sex Ratio Male:Female
+```{r}
+tmp = data_sch
+tmp$SCHID = as.factor(tmp$SCHID)
+tmp %>% group_by(SCHID) %>% summarize(SexRatio = round(sum(SEX == 2)/sum(SEX == 1),4)) %>% arrange(-SexRatio) %>% hchart('scatter',hcaes(x = 'SCHID',y = 'SexRatio', size = 'SexRatio',color = 'SCHID')) %>% hc_add_theme(hc_theme_538()) %>% hc_title(text = 'Male : Female Ratio for All Schools' ) %>%  hc_yAxis(title = list(text = "Ratio"),
+        plotLines = list(list(
+          value = 1,
+          color = '#ff0000',
+          width = 3,
+          zIndex = 4,
+          label = list(text = "Male : Female -> 1:1 Line",
+                       style = list( color = '#ff0000', fontWeight = 'bold'   )
+          )))) %>%
+  hc_xAxis(title = list(text = "School ID"),
+           opposite = TRUE,
+           minorTickInterval = "auto",
+           minorGridLineDashStyle = "LongDashDotDot",
+           showFirstLabel = FALSE,
+           showLastLabel = FALSE,
+           plotBands = list(
+             list(from = 4.5, to = 5.5, color = "rgba(100, 0, 0, 0.1)",
+                  label = list(text = "Private School")))) 
+#This is a chart for all school male comapre to female ratio, the larger circle means this school have higher ratio. From the plot we noticed before school id 68493, all of those schools are having more females than males. Our private school, has more males, the ratio is 1:0.8611. 
+```
+
+##SES Level
+```{r}
+tmp = data_l
+tmp$SCHID = as.factor(tmp$SCHID)
+tmp %>% group_by(SCHID) %>% summarize(SESlvl = MMEANSES) %>% arrange(-SESlvl)%>% hchart('scatter',hcaes(x = 'SCHID',y = 'SESlvl', size = 'SESlvl',color = 'SCHID')) %>% hc_add_theme(hc_theme_538()) %>% hc_title(text = 'SES for All Schools' ) %>%  hc_yAxis(title = list(text = "SES Level"),
+        plotLines = list(list(
+          value = 0,
+          color = '#ff0000',
+          width = 3,
+          zIndex = 4,
+          label = list(text = "Positive SES Line",
+                       style = list( color = '#ff0000', fontWeight = 'bold'   )
+          )))) %>%
+  hc_xAxis(title = list(text = "School ID"),
+           opposite = TRUE,
+           minorTickInterval = "auto",
+           minorGridLineDashStyle = "LongDashDotDot",
+           showFirstLabel = FALSE,
+           showLastLabel = FALSE,
+           plotBands = list(
+             list(from = -0.5, to = 0.5, color = "rgba(100, 0, 0, 0.1)",
+                  label = list(text = "Private School")))) 
+tmp = data_sch
+tmp$SCHID = as.factor(tmp$SCHID)
+tmp %>% group_by(SCHID) %>% summarise(LowSES = sum(SES < 0,na.rm=T),n=n()) %>% mutate(PerctengeLowSES = round(LowSES/n,2)) %>% arrange(-PerctengeLowSES) %>% hchart('scatter', hcaes(x = 'SCHID', y = 'PerctengeLowSES', size = 'PerctengeLowSES', corlor = 'SCHID')) %>%  hc_add_theme(hc_theme_538()) %>% hc_title(text = 'Low SES Percentage for All Schools' ) %>% hc_xAxis(title = list(text = "School ID"),
+           opposite = TRUE,
+           minorTickInterval = "auto",
+           minorGridLineDashStyle = "LongDashDotDot",
+           showFirstLabel = FALSE,
+           showLastLabel = FALSE,
+           plotBands = list(
+             list(from = 8.5, to = 9.5, color = "rgba(100, 0, 0, 0.1)",
+                  label = list(text = "Private School")))) 
+#Above the red line, will receive a positive SES.
+```
+
+
+##Teacher Ratio:
+```{r}
+tmp = data_l
+tmp$SCHID = as.factor(tmp$SCHID)
+tmp$MPUBLIC = ifelse(tmp$MPUBLIC == 1,'PUB','PRV')
+tmp %>% group_by(SCHID) %>% summarize(TeacherRetio = MRATIO) %>% arrange(-TeacherRetio) %>% hchart('scatter',hcaes(x = 'SCHID',y = 'TeacherRetio', size = 'TeacherRetio',color = 'SCHID')) %>% hc_add_theme(hc_theme_538()) %>% hc_title(text = 'Teacher Ratio' ) %>%  hc_yAxis(title = list(text = "TeacherRetio"),
+        plotLines = list(list(
+          value = mean(tmp$MRATIO),
+          color = '#ff0000',
+          width = 3,
+          zIndex = 4,
+          label = list(text = "Mean of Teacher Ratio",
+                       style = list( color = '#ff0000', fontWeight = 'bold'   )
+          )))) %>%
+  hc_xAxis(title = list(text = "School ID"),
+           opposite = TRUE,
+           minorTickInterval = "auto",
+           minorGridLineDashStyle = "LongDashDotDot",
+           showFirstLabel = FALSE,
+           showLastLabel = FALSE,
+           plotBands = list(
+             list(from = 8.5, to = 9.5, color = "rgba(100, 0, 0, 0.1)",
+                  label = list(text = "Private School")))) 
+```
+
+#EDA Between Public and Private
+##Sex Percentage
+```{r}
+tmp = data_sch
+tmp$PUB = ifelse(tmp$SCHID %in% subset(data_l,data_l$MPUBLIC == 1)$SCHID,'PUB','PRV')
+tmp$SEX = ifelse(tmp$SEX == 1, 'Male','Female')
+tmp %>% group_by(PUB,SEX) %>% summarise(n = n()) %>% mutate(percentage = round(n/sum(n)*100)) %>% hchart('bar',hcaes(x = 'PUB', y = 'percentage',group = 'SEX')) %>% hc_plotOptions(series = list(stacking = 'normal')) %>% hc_title(text = 'Percentage of Sex Between Public School and Private School' ) %>% hc_add_theme(hc_theme_flat())
+```
+
+##Female Score and Study Time
+```{r}
+tmp = data_sch
+tmp$PUB = ifelse(tmp$SCHID %in% subset(data_l,data_l$MPUBLIC == 1)$SCHID,'PUB','PRV')
+tmp$SEX = ifelse(tmp$SEX == 1, 'Male','Female')
+hcboxplot(x = tmp$MATH,var = tmp$PUB) %>% hc_chart(type = 'column') %>%hc_add_theme(hc_theme_ffx())
+highchart() %>%
+  hc_add_series_boxplot(x = tmp$HOMEWORK,by = tmp$PUB , name = 'Homework',outliers = F) %>%
+  hc_add_series_boxplot(x = tmp$PARENTED,by = tmp$PUB , name = 'Parent',outliers = F) %>% hc_add_theme(hc_theme_ffx())
+
+```
+
+##Race Combination in Public and Priavet Schools
+```{r}
+tmp = data_sch
+tmp$PUB = ifelse(tmp$SCHID %in% subset(data_l,data_l$MPUBLIC == 1)$SCHID,'PUB','PRV')
+tmp$SEX = ifelse(tmp$SEX == 1, 'Male','Female')
+tmp$RACE = ifelse(tmp$RACE == 1,'Asian',ifelse(tmp$RACE == 2,'Hispanic',ifelse(tmp$RACE ==3,'Black',ifelse(tmp$RACE==4,'White','Native American'))))
+Pie_Pub= tmp %>% subset(tmp$PUB == "PUB") %>%
+  group_by(RACE) %>%
+  summarise(volume = n()) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(RACE=factor(RACE, levels = as.character(RACE)))%>%
+  ggplot(aes(x="", y= share, fill=RACE)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+
+Pie_Tst = tmp %>% subset(tmp$PUB == "PRV") %>%
+  group_by(RACE) %>%
+  summarise(volume = n()) %>%
+  mutate(share=volume/sum(volume)) %>%
+  ungroup() %>% 
+  arrange(desc(volume)) %>%
+  mutate(RACE=factor(RACE, levels = as.character(RACE)))%>%
+  ggplot(aes(x="", y= share, fill=RACE)) +
+  geom_col() +
+  geom_text(aes(label = scales::percent(round(share,3))), position = position_stack(vjust = 0.5))+
+  coord_polar(theta = "y") + 
+  theme_void()
+ggarrange(Pie_Ctl,Pie_Tst,labels = c("Public School", "Private School"))
+```
+
+#Analysis
+##Correlation Heatmap on MathScore Female
+```{r}
+tmp = subset(data_sch,data_sch$SEX == 2)
+tmp = tmp[which(tmp$SES != 'NA'),]
+tmp$PUB = ifelse(tmp$SCHID %in% subset(data_l,data_l$MPUBLIC == 1)$SCHID,0,1)
+tmp = tmp[,-c(1,2,8)]
+summary(tmp)
+newtmp = round(cor(tmp),2)
+newtmp = melt(newtmp)
+ggplot(newtmp, aes(Var2, Var1, fill = value))+
+ geom_tile(color = "white")+
+ scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 0, limit = c(-1,1), space = "Lab", 
+    name="Variable\nCorrelation") +
+  theme_minimal()+ # minimal theme
+ theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed() +geom_text(aes(Var2, Var1, label = value), color = "black", size = 4)
+```
+
+##ANOVA
+```{r}
+tmp = subset(data_sch,data_sch$SEX == 2)
+tmp = tmp[which(tmp$SES != 'NA'),]
+tmp$PUB = ifelse(tmp$SCHID %in% subset(data_l,data_l$MPUBLIC == 1)$SCHID,0,1)
+tmp = tmp[,-c(1,2,8)]
+fit.lm = lm(data = tmp,MATH~WHITE+SES+HOMEWORK+PARENTED+PUB)
+summary(fit.lm)
+par(mfrow = c(2,2))
+plot(fit.lm)
+fit.aov = aov(fit.lm)
+summary(fit.aov)
+confint(fit.aov)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
